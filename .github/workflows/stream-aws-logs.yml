@@ -30,6 +30,12 @@ jobs:
             LOG_GROUP_NAME="${{ secrets.BETA }}"
           fi
           
+          # Check if log group name is set
+          if [ -z "$LOG_GROUP_NAME" ]; then
+            echo "Error: Log group name is empty. Please check your secrets PROD and BETA are set."
+            exit 1
+          fi
+          
           COMMIT_SHA="${{ github.sha }}"
           GITHUB_ACTOR="${{ github.actor }}"
           WORKFLOW_NAME="${{ github.workflow }}"
@@ -47,11 +53,11 @@ jobs:
             --log-group-name "$LOG_GROUP_NAME" \
             --log-stream-name "$LOG_STREAM_NAME" || true
           
-          # Create the log message
-          LOG_MESSAGE="Workflow: $WORKFLOW_NAME, Commit: $COMMIT_SHA, Actor: $GITHUB_ACTOR, Branch: ${{ github.ref_name }}, Timestamp: $TIMESTAMP"
+          # Create the log message as a single string
+          LOG_MESSAGE="Workflow: ${WORKFLOW_NAME}, Commit: ${COMMIT_SHA}, Actor: ${GITHUB_ACTOR}, Branch: ${{ github.ref_name }}, Timestamp: ${TIMESTAMP}"
           
           # Put log event with proper JSON format
           aws logs put-log-events \
             --log-group-name "$LOG_GROUP_NAME" \
             --log-stream-name "$LOG_STREAM_NAME" \
-            --log-events timestamp=$TIMESTAMP,message="$LOG_MESSAGE"
+            --log-events "[{\"timestamp\":$TIMESTAMP,\"message\":\"$LOG_MESSAGE\"}]"
