@@ -1,0 +1,48 @@
+name: AWS Logging
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  log_to_cloudwatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create log stream and put log event
+        run: |
+          LOG_STREAM_NAME=$(date -u +"%Y-%m-%dT%H-%M-%SZ")
+          LOG_GROUP_NAME="${{ secrets.BETA }}"
+          LOG_GROUP_NAME="${{ secrets.PROD }}"
+          COMMIT_SHA="${GITHUB_SHA}"
+          GITHUB_ACTOR="${GITHUB_ACTOR}"
+          WORKFLOW_NAME="${GITHUB_WORKFLOW}"
+          TIMESTAMP=$(date +%s%3N)
+
+          # Create log stream
+          aws logs create-log-stream --log-group-name "$LOG_GROUP_NAME" --log-stream-name "$LOG_STREAM_NAME"
+
+          # Prepare log event
+          LOG_EVENT_JSON=$(jq -n \
+            --arg workflow "$WORKFLOW_NAME" \
+            --arg sha "$COMMIT_SHA" \
+            --arg actor "$GITHUB_ACTOR" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              message: "Workflow: \($workflow), Commit: \($sha), Actor: \($actor), Timestamp: \($timestamp)",
+              timestamp: ($timestamp | tonumber)
+            }')
+
+          # Put log event
+          aws logs put-log-events \
+            --log-group-name "$LOG_GROUP_NAME" \
+            --log-stream-name "$LOG_STREAM_NAME" \
+            --log-events "$LOG_EVENT_JSON"
