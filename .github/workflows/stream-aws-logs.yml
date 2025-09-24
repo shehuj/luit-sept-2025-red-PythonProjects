@@ -1,5 +1,4 @@
 name: AWS Logging
-
 on:
   push:
     branches:
@@ -10,8 +9,11 @@ jobs:
   log_to_cloudwatch:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -20,29 +22,36 @@ jobs:
       - name: Create log stream and put log event
         run: |
           LOG_STREAM_NAME=$(date -u +"%Y-%m-%dT%H-%M-%SZ")
-          LOG_GROUP_NAME="${{ secrets.BETA }}"
-          LOG_GROUP_NAME="${{ secrets.PROD }}"
-          COMMIT_SHA="${GITHUB_SHA}"
-          GITHUB_ACTOR="${GITHUB_ACTOR}"
-          WORKFLOW_NAME="${GITHUB_WORKFLOW}"
+          
+          # Set log group based on branch
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            LOG_GROUP_NAME="${{ secrets.PROD }}"
+          else
+            LOG_GROUP_NAME="${{ secrets.BETA }}"
+          fi
+          
+          COMMIT_SHA="${{ github.sha }}"
+          GITHUB_ACTOR="${{ github.actor }}"
+          WORKFLOW_NAME="${{ github.workflow }}"
           TIMESTAMP=$(date +%s%3N)
-
-          # Create log stream
-          aws logs create-log-stream --log-group-name "$LOG_GROUP_NAME" --log-stream-name "$LOG_STREAM_NAME"
-
-          # Prepare log event
-          LOG_EVENT_JSON=$(jq -n \
-            --arg workflow "$WORKFLOW_NAME" \
-            --arg sha "$COMMIT_SHA" \
-            --arg actor "$GITHUB_ACTOR" \
-            --arg timestamp "$TIMESTAMP" \
-            '{
-              message: "Workflow: \($workflow), Commit: \($sha), Actor: \($actor), Timestamp: \($timestamp)",
-              timestamp: ($timestamp | tonumber)
-            }')
-
-          # Put log event
+          
+          echo "Using log group: $LOG_GROUP_NAME"
+          echo "Log stream: $LOG_STREAM_NAME"
+          
+          # Create log group (ignore error if it already exists)
+          aws logs create-log-group \
+            --log-group-name "$LOG_GROUP_NAME" || true
+          
+          # Create log stream (ignore error if it already exists)
+          aws logs create-log-stream \
+            --log-group-name "$LOG_GROUP_NAME" \
+            --log-stream-name "$LOG_STREAM_NAME" || true
+          
+          # Create the log message
+          LOG_MESSAGE="Workflow: $WORKFLOW_NAME, Commit: $COMMIT_SHA, Actor: $GITHUB_ACTOR, Branch: ${{ github.ref_name }}, Timestamp: $TIMESTAMP"
+          
+          # Put log event with proper JSON format
           aws logs put-log-events \
             --log-group-name "$LOG_GROUP_NAME" \
             --log-stream-name "$LOG_STREAM_NAME" \
-            --log-events "$LOG_EVENT_JSON"
+            --log-events timestamp=$TIMESTAMP,message="$LOG_MESSAGE"
