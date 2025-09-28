@@ -32,7 +32,7 @@ def main():
     if not ok:
         sys.exit(1)
 
-    print("All required files are present in", repo_root)
+#    print("All required files are present in", repo_root)
     sys.exit(0)
 
 if __name__ == "__main__":

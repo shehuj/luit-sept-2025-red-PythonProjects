@@ -52,10 +52,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Log enriched audit to CloudWatch (beta)
+    - name: Log enriched audit to CloudWatch (prod)
       if: steps.file_audit.outcome == 'success'
       run: |
-          LOG_GROUP="/github-actions/required-files-checker/beta"
+          LOG_GROUP="/github-actions/required-files-checker/prod"
 
           # Use a timestamp without colons for the log stream name (valid pattern: no ':' or '*')
           LOG_STREAM=$(date -u +"%Y-%m-%dT%H-%M-%SZ")
