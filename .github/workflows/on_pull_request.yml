@@ -25,7 +25,7 @@ jobs:
 
       - name: Run required files check
         run: |
-          python check_required_files.py
+          python 02/tests/check_required_files.py
 
       - name: Configure AWS credentials
         if: steps.run_required_file_check.outcome == 'success'
