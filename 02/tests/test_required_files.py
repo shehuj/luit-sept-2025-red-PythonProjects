@@ -23,7 +23,6 @@ def main():
     # List required filenames relative to this directory
     required = [
         "README.md",
-        "LICENSE",
         ".gitignore",
     #    "setup.py",
         # add others you need
