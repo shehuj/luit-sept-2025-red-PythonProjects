@@ -14,8 +14,9 @@ based on user input:
 - It is case sensitive to the department names, prints out a user friendly message.
 
 
+
 ### Folder 02: Required File Presence Checker:
-Python Script for Required File Presence Checker
+Python Script for Required File Presence Checker project, from FOUNDATIONAL, ADVANCE TO COMPLEX.
 
 Help the platform team implement a CI/CD-driven quality gate that checks for required files in every repository and logs audit results to CloudWatch upon success.
 
@@ -28,3 +29,5 @@ Include a README.md that explains:
 - What happens when required files are missing
 
 
+
+### Folder 03: 
