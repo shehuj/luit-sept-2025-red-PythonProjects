@@ -2,7 +2,7 @@
 # Then install Python dependencies, run tests and lint with a variety of Python versions.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: TestsPackage
+name: Run tests and Check required files
 
 on:
   push:
@@ -22,9 +22,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Check presence of required files
+    - name: Check required files
       run: | 
-        python 02/tests/test_required_files.py
+        python 02/tests/test_check_required_files.py
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
