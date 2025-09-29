@@ -25,16 +25,18 @@ jobs:
         id: file_audit
         run: |
           # Run the script which should output JSON with required/present/missing
-          audit_json=$(python 02/tests/test_check_required_files.py)
+          audit_json=$(python check_required_files.py)
+          if [ -z "$audit_json" ]; then
+            echo "❌ ERROR: audit_json is empty — no JSON produced"
+            exit 1
+          fi
           echo "Audit JSON: $audit_json"
+
           # Save it so later steps can use it
           echo "$audit_json" > audit_output.json
-          # Run the test script; if it fails, the job fails
 
-          python 02/tests/test_check_required_files.py $audit_json
-
-
-
+          # Optionally, also run a test script if you have one
+          python 02/tests/test_check_required_files.py
 
       - name: Configure AWS credentials
         if: ${{ steps.file_audit.outcome == 'success' }}
@@ -57,6 +59,10 @@ jobs:
           ACTOR="${GITHUB_ACTOR}"
 
           CONTEXT=$(cat audit_output.json)
+          if [ -z "$CONTEXT" ]; then
+            echo "❗ WARNING: CONTEXT is empty; aborting log"
+            exit 0
+          fi
 
           echo "Logging to: group=$LOG_GROUP, stream=$LOG_STREAM"
           echo "Context: $CONTEXT"
