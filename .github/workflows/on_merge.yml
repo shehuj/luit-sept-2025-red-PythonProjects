@@ -25,7 +25,7 @@ jobs:
         id: file_audit
         run: |
           # Run the script which should output JSON with required/present/missing
-          audit_json=$(python 02/test/test_check_required_files.py)
+          audit_json=$(python 02/tests/test_check_required_files.py)
           echo "Audit JSON: $audit_json"
           # Save it so later steps can use it
           echo "$audit_json" > audit_output.json
