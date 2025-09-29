@@ -1,6 +1,7 @@
 import random
 import string
 
+
 # define the number of instance names to generate
 number_of_instances = int(input("Enter number of instances to generate names for: \n"))
 print("number_of_instances: ", number_of_instances)
