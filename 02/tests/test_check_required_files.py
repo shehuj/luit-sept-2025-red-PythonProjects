@@ -26,7 +26,7 @@ def main():
     required = [
         "README.md",
         ".gitignore",
-        "requirements.txt",
+        "requirements.txt"
         # add others you need
     ]
 
