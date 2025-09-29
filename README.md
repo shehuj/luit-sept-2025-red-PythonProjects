@@ -21,12 +21,12 @@ Python Script for Required File Presence Checker project, from FOUNDATIONAL, ADV
 Help the platform team implement a CI/CD-driven quality gate that checks for required files in every repository and logs audit results to CloudWatch upon success.
 
 Documentation:
-Include a README.md that explains:
+Included in the README.md:
 - How to define GitHub Secrets
 - How to run the file presence check manually
 - How the AWS CLI log step works
 - Where to find logs in CloudWatch for beta and prod runs
-- What happens when required files are missing
+- What happens when required files are missing (error Handling).
 
 
 
