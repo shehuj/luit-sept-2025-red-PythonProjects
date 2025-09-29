@@ -1,3 +1,3 @@
 # tests/test.py
-#def tests():
-#    assert True
+def tests():
+    assert True
