@@ -1,28 +1,26 @@
 #!/usr/bin/env python3
 import sys
-import json
 from pathlib import Path
 
-def check_files(base_dir: Path, required_files: list[str]) -> dict:
-    present = []
+def check_files(base_dir: Path, required_files: list[str]) -> bool:
     missing = []
     for filename in required_files:
         target = base_dir / filename
-        if target.exists():
-            present.append(filename)
-        else:
+        if not target.exists():
             missing.append(filename)
-    return {
-        "required": required_files,
-        "present": present,
-        "missing": missing,
-        "all_present": (len(missing) == 0),
-    }
+    if missing:
+        print("ERROR: Missing required file(s) in", str(base_dir))
+        for fn in missing:
+            print(f"  - {fn}")
+        return False
+    return True
 
 def main():
+    # The directory containing this script
     script_path = Path(__file__).resolve()
     repo_root = script_path.parent.parent  # base directory where files should reside
 
+    # List required filenames relative to this directory
     required = [
         "README.md",
         ".gitignore",
@@ -30,14 +28,12 @@ def main():
         # add others you need
     ]
 
-    result = check_files(repo_root, required)
-
-    # Print JSON to stdout
-    print(json.dumps(result))
-
-    # Exit code
-    if not result["all_present"]:
+    ok = check_files(repo_root, required)
+    if not ok:
         sys.exit(1)
+
+    print(required)
+    print("All required files are present in", repo_root)
     sys.exit(0)
 
 if __name__ == "__main__":
