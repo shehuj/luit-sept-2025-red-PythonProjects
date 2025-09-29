@@ -29,7 +29,7 @@ jobs:
           # Save it so later steps can use it
           echo "$audit_json" > audit_output.json
           # Continue (exit code of script controls success/failure)
-          python 02/tests/test_check_required_files.py
+          python ./02/tests/test_check_required_files.py
 
       - name: Configure AWS credentials
         if: steps.run_required_files_audit.outcome == 'success'
