@@ -36,7 +36,7 @@ jobs:
             aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Log to CloudWatch on success
-        if: steps.file_check.outcome == 'success'
+        if: steps.run_required_files_check.outcome == 'success'
         run: |
           # Set variables
           LOG_GROUP="/github-actions/required-files-checker/beta"

@@ -19,7 +19,7 @@ jobs:
           pip install pyyaml jq
 
       - name: Run required files audit
-        id: file_audit
+      #  id: file_audit
         run: |
           # Run the script which should output JSON with required/present/missing
           audit_json=$(python check_required_files.py)
@@ -30,7 +30,7 @@ jobs:
           python 02/tests/
 
       - name: Configure AWS credentials
-        if: steps.file_audit.outcome == 'success'
+        if: steps.run_required_files_audit.outcome == 'success'
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
