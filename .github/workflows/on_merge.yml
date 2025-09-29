@@ -31,7 +31,7 @@ jobs:
           echo "$audit_json" > audit_output.json
           # Run the test script; if it fails, the job fails
 
-          python 02/tests/test_required_files.py $audit_json
+          python 02/tests/test_check_required_files.py $audit_json
 
 
 
