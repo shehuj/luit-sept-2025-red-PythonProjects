@@ -27,7 +27,7 @@ jobs:
           # Run the script which should output JSON with required/present/missing
           audit_json=$(python 02/tests/test_check_required_files.py)
           if [ -z "$audit_json" ]; then
-            echo "❌ ERROR: audit_json is empty — no JSON produced"
+            echo "ERROR: audit_json is empty — no JSON produced"
             exit 1
           fi
           echo "Audit JSON: $audit_json"
@@ -60,7 +60,7 @@ jobs:
 
           CONTEXT=$(cat audit_output.json)
           if [ -z "$CONTEXT" ]; then
-            echo "❗ WARNING: CONTEXT is empty; aborting log"
+            echo "WARNING: CONTEXT is empty; aborting log"
             exit 0
           fi
 
