@@ -28,7 +28,6 @@ jobs:
           echo "$audit_json" > audit_output.json
           # Continue (exit code of script controls success/failure)
           python /02/tests/test_check_required_files.py
-
       - name: Configure AWS credentials
         if: steps.file_audit.outcome == 'success'
         uses: aws-actions/configure-aws-credentials@v2
